@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./FR/style.css">
+    
+    <script src="./FR/libs/lib.js"></script>
+    <script src="./FR/javascript.js"></script>
+    
+    <title>Document</title>
+</head>
+<body>
+  
+    <div id="background">
+     
+    <canvas id="canvas" width="1180" height="450">
+     
+    </canvas>
+     
+    <div class="slidecontainer">
+    
+      <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+      
+    </div>
+    <button id="play_button_left" type="button" onclick="start_left()">Play<br>Stop</button>
+  
+    <button id="play_button_right" type="button" onclick="start_right()">Play<br>Stop</button>
+    </div>
+    <audio id="demo">     
+      <source src="FR/papa_roach_last _resort.mp3" type="audio/mpeg"/>     
+       
+      Ihr Browser unterstützt das <code>audio</code> Element nicht. 
+    </audio> 
+
+
+    <!--<div> 
+      <button onclick="playAudio()">Play the Audio</button> 
+      <button onclick="pauseAudio()">Pause the Audio</button> 
+      <button onclick="increaseVolume()">Increase Volume</button>  
+      <button onclick="decreaseVolume()">Decrease Volume</button> 
+    </div>-->
+</body>
+</html>
