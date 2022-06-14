@@ -21,18 +21,18 @@
      
     <div class="slidecontainer">
     
-      <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+      <input type="range" min="0" max="10" value="5" class="slider" id="myRange" oninput="xFade(this.value)">
       
     </div>
     <button id="play_button_left" type="button" onclick="start_left()">Play<br>Stop</button>
   
     <button id="play_button_right" type="button" onclick="start_right()">Play<br>Stop</button>
     </div>
-    <audio id="demo">     
+    <!-- <audio id="demo">     
       <source src="FR/papa_roach_last _resort.mp3" type="audio/mpeg"/>     
        
       Ihr Browser unterstützt das <code>audio</code> Element nicht. 
-    </audio> 
+    </audio>  -->
 
 
     <!--<div> 
@@ -41,5 +41,6 @@
       <button onclick="increaseVolume()">Increase Volume</button>  
       <button onclick="decreaseVolume()">Decrease Volume</button> 
     </div>-->
+    
 </body>
 </html>

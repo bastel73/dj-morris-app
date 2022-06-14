@@ -1,47 +1,161 @@
 window.addEventListener('load', canvasApp, false);
+//window.addEventListener('load', init, false);
 
-var play_left = false;
-var play_right = false;
+var play_left;
+var play_right;
 var stroke_color_left = "rgb(255, 80, 0";
 var stroke_color_right = "rgb(255, 80, 0";
 var timerLeft;
 var timerRight;
+var audioL;
+var audioR;
+var sourceL;
+var sourceR;
+var gainL;
+var gainR;
+var bufferL;
+var bufferR;
+const sliderDiv = document.getElementById("myRange");
+
+function init(){
+    // timerLeft = new timer(198, 258,"00:00:00")
+    // timerRight = new timer(850, 258,"21:21:12")
+    play_left=false;
+    play_right=false;
+    try {
+        audioL = new AudioContext();
+        
+        audioR = new AudioContext();
+    }
+    catch (e) {
+        alert('Web Audio API is not supported in this browser');
+       //wird beispielsweise im IE angezeigt
+        return;
+    }
+    //Sound mit AudioBuffer laden
+    loadFirstSound("./FR/audio/song1.mp3", "./FR/audio/song2.mp3");
+    
+    //audioL.suspend();
+}
+
+function loadFirstSound(url1, url2) {
+    
+    var request1 = new XMLHttpRequest();
+    request1.open('GET', url1, true);
+    request1.responseType = 'arraybuffer';
+
+    request1.onload = function () {
+        audioL.decodeAudioData(request1.response, function (buffer) {
+            bufferL = buffer;
+            sourceL = audioL.createBufferSource();
+            sourceL.buffer = bufferL;
+            gainL=audioL.createGain();
+            sourceL.connect(gainL);
+            gainL.connect(audioL.destination);
+            gainL.gain.value=0.5;
+            sourceL.start(0);
+            audioL.suspend();             
+        }, onError);
+    }
+    request1.send();
+    
+    var request2 = new XMLHttpRequest();
+    request2.open('GET', url2, true);
+    request2.responseType = 'arraybuffer';
+
+    request2.onload = function () {
+        audioR.decodeAudioData(request2.response, function (buffer) {
+            bufferR = buffer;
+            sourceR = audioR.createBufferSource();
+            sourceR.buffer = bufferR;
+            gainR=audioR.createGain();
+            sourceR.connect(gainR);
+            gainR.connect(audioR.destination);
+            gainR.gain.value=0.5;
+            sourceR.start(0);
+            audioR.suspend();                
+        }, onError);
+    }
+    request2.send();
+}
+
+function onError(e) {
+    console.log(e);
+}
+
+function playSoundL() {
+    console.log(audioL.state)
+
+    if (audioL.state==='running'){
+        audioL.suspend()
+    } else if (audioL.state==='suspended'){
+        audioL.resume()
+    }
+}   
+    
+
+function playSoundR() {
+    console.log(audioR.state)
+
+    if (audioR.state==='running'){
+        audioR.suspend()
+    } else if (audioR.state==='suspended'){
+        audioR.resume()
+    } 
+}
 
 function start_left() {
+    
     play_left = !play_left;
+    console.log(play_left)
     if (play_left) {
-        playAudio();
+        playSoundL();
         stroke_color_left = "rgb(0, 255, 0)";
         document.getElementById("play_button_left").style.color = "black";
         document.getElementById("play_button_left").style.background = "rgb(0, 255, 0";
     } else {
-        pauseAudio();
+        playSoundL();
         stroke_color_left = "rgb(255, 80, 0";
         document.getElementById("play_button_left").style.color = "white";
         document.getElementById("play_button_left").style.background = "rgb(255, 80, 0";
     }
 }
 function start_right() {
+    
     play_right = !play_right;
+    console.log(play_right)
     if (play_right) {
-		playAudio();
+		playSoundR();
         stroke_color_right = "rgb(0, 255, 0)";
         document.getElementById("play_button_right").style.color = "black";
         document.getElementById("play_button_right").style.background = "rgb(0, 255, 0";
     } else {
-		pauseAudio();
+		playSoundR();
         stroke_color_right = "rgb(255, 80, 0";
         document.getElementById("play_button_right").style.color = "white";
         document.getElementById("play_button_right").style.background = "rgb(255, 80, 0";
     }
 }
 
+function xFade(gainVal){
+    
+    console.log(gainVal)
+    
+    gainL.gain.value=1-gainVal/10;
+    if(gainVal<10){
+        gainR.gain.value=(gainVal%10)/10;
+    }else{
+        gainR.gain.value=1
+    }
+    
+    
+}
 function canvasApp() {
     if (!document.createElement('canvas').getContext) {
         return;
     }
-    var time_player_left = "00:00:00";
-    var time_player_right = "00:00:00";
+    //var time_player_left = "00:00:00";
+    //var time_player_right = "00:00:00";
 
     var theCanvas = document.getElementById('canvas');
     var context = theCanvas.getContext('2d');
@@ -64,50 +178,50 @@ function canvasApp() {
     var ball_2 = { x2: 0, y2: 0, angle: 135 };
 
     //MusicStuff
-    const mp3file = "./FR/ahmna.mp3"
-    const audioContext = new window.AudioContext()
-    const audio = new Audio(mp3file)
-    var papaTime
-    let papa = document.getElementById("demo")
-    papaDura = papa.duration
-    papa.addEventListener("timeupdate",function(){
-        papaTime = papa.currentTime*1000
+    // const mp3file = "./FR/ahmna.mp3"
+    // const audioContext = new window.AudioContext()
+    // const audio = new Audio(mp3file)
+    // var papaTime
+    // let papa = document.getElementById("demo")
+    // papaDura = papa.duration
+    // papa.addEventListener("timeupdate",function(){
+    //     papaTime = papa.currentTime*1000
         
-         console.log(papa.duration)
-    })
-    function msToTime(s) {
-        var ms = s % 1000;
-        s = (s - ms) / 1000;
-        var secs = s % 60;
-        s = (s - secs) / 60;
-        var mins = s % 60;
-        secs = (secs <10)? "0"+secs : secs
-        // var hrs = (s - mins) / 60;
+    //      console.log(papa.duration)
+    // })
+    // function msToTime(s) {
+    //     var ms = s % 1000;
+    //     s = (s - ms) / 1000;
+    //     var secs = s % 60;
+    //     s = (s - secs) / 60;
+    //     var mins = s % 60;
+    //     secs = (secs <10)? "0"+secs : secs
+    //     // var hrs = (s - mins) / 60;
       
-        return  mins + ':' + secs + ':' + Math.floor(ms);
-      }
+    //     return  mins + ':' + secs + ':' + Math.floor(ms);
+    //   }
 
-    function timer(x,y,time, color ="#FFF", font = "arial",fontsize = 23){
-        this.time = time
-        this.x = x
-        this.y = y
-        this.color = color
-        // this.text = text
-        this.font = font
-        this.fontsize = fontsize
+    // function timer(x,y,time, color ="#FFF", font = "arial",fontsize = 23){
+    //     this.time = time
+    //     this.x = x
+    //     this.y = y
+    //     this.color = color
+    //     // this.text = text
+    //     this.font = font
+    //     this.fontsize = fontsize
 
-        this.draw = () =>{
-            context.fillStyle = this.color;
-            context.font = this.fontsize + "px " + this.font;
-            context.fillText(this.time, this.x, this.y);
-        }
-        this.update = (time) => {
-            if(time){
-                this.time = msToTime(time)
-            }
-            this.draw()
-        }
-    }
+    //     this.draw = () =>{
+    //         context.fillStyle = this.color;
+    //         context.font = this.fontsize + "px " + this.font;
+    //         context.fillText(this.time, this.x, this.y);
+    //     }
+    //     this.update = (time) => {
+    //         if(time){
+    //             this.time = msToTime(time)
+    //         }
+    //         this.draw()
+    //     }
+    // }
 
     function drawCanvas() {
 
@@ -163,7 +277,7 @@ function canvasApp() {
         context.stroke();
 
         //Zeitanzeige links
-        timerLeft.update(papaTime)
+        //timerLeft.update(papaTime)
 
 
         // context.fillStyle = "white";
@@ -198,7 +312,7 @@ function canvasApp() {
         context.stroke();
 
         //Zeitanzeige rechts
-        timerRight.update("21:12:33")
+        //timerRight.update("21:12:33")
 
         //Marker rechts zeichnen
         context.fillStyle = stroke_color_right;
@@ -209,12 +323,7 @@ function canvasApp() {
         context.fill();
         context.stroke();
 
-    }
-
-    function init(){
-        timerLeft = new timer(198, 258,"00:00:00")
-        timerRight = new timer(850, 258,"21:21:12")
-    }
+    }    
 
     function renderingLoop() {
         requestAnimationFrame(renderingLoop);
@@ -225,8 +334,9 @@ function canvasApp() {
 
 }
 
-var audio;
-window.addEventListener("load", eventWindowLoaded, false);
+
+//var audio;
+//window.addEventListener("load", eventWindowLoaded, false);
 
 function eventWindowLoaded() {
     audio = document.getElementById('demo');
