@@ -18,10 +18,10 @@ var bufferR;
 const sliderDiv = document.getElementById("myRange");
 
 function init(){
-    // timerLeft = new timer(198, 258,"00:00:00")
-    // timerRight = new timer(850, 258,"21:21:12")
+    
     play_left=false;
     play_right=false;
+    
     try {
         audioL = new AudioContext();
         
@@ -154,8 +154,11 @@ function canvasApp() {
     if (!document.createElement('canvas').getContext) {
         return;
     }
-    //var time_player_left = "00:00:00";
-    //var time_player_right = "00:00:00";
+    var time_player_left = "00:00:00";
+    var time_player_right = "00:00:00";
+
+    timerLeft = new timer(198, 258,"00:00:00")
+    timerRight = new timer(850, 258,"21:21:12")
 
     var theCanvas = document.getElementById('canvas');
     var context = theCanvas.getContext('2d');
@@ -189,39 +192,39 @@ function canvasApp() {
         
     //      console.log(papa.duration)
     // })
-    // function msToTime(s) {
-    //     var ms = s % 1000;
-    //     s = (s - ms) / 1000;
-    //     var secs = s % 60;
-    //     s = (s - secs) / 60;
-    //     var mins = s % 60;
-    //     secs = (secs <10)? "0"+secs : secs
-    //     // var hrs = (s - mins) / 60;
+    function msToTime(s) {
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        secs = (secs <10)? "0"+secs : secs
+        // var hrs = (s - mins) / 60;
       
-    //     return  mins + ':' + secs + ':' + Math.floor(ms);
-    //   }
+        return  mins + ':' + secs + ':' + Math.floor(ms);
+      }
 
-    // function timer(x,y,time, color ="#FFF", font = "arial",fontsize = 23){
-    //     this.time = time
-    //     this.x = x
-    //     this.y = y
-    //     this.color = color
-    //     // this.text = text
-    //     this.font = font
-    //     this.fontsize = fontsize
+    function timer(x,y,time, color ="#FFF", font = "arial",fontsize = 23){
+        this.time = time
+        this.x = x
+        this.y = y
+        this.color = color
+        // this.text = text
+        this.font = font
+        this.fontsize = fontsize
 
-    //     this.draw = () =>{
-    //         context.fillStyle = this.color;
-    //         context.font = this.fontsize + "px " + this.font;
-    //         context.fillText(this.time, this.x, this.y);
-    //     }
-    //     this.update = (time) => {
-    //         if(time){
-    //             this.time = msToTime(time)
-    //         }
-    //         this.draw()
-    //     }
-    // }
+        this.draw = () =>{
+            context.fillStyle = this.color;
+            context.font = this.fontsize + "px " + this.font;
+            context.fillText(this.time, this.x, this.y);
+        }
+        this.update = (time) => {
+            if(time){
+                this.time = msToTime(time)
+            }
+            this.draw()
+        }
+    }
 
     function drawCanvas() {
 
@@ -277,7 +280,7 @@ function canvasApp() {
         context.stroke();
 
         //Zeitanzeige links
-        //timerLeft.update(papaTime)
+        timerLeft.update(audioL.currentTime)
 
 
         // context.fillStyle = "white";
@@ -312,7 +315,7 @@ function canvasApp() {
         context.stroke();
 
         //Zeitanzeige rechts
-        //timerRight.update("21:12:33")
+        timerRight.update(audioR.currentTime)
 
         //Marker rechts zeichnen
         context.fillStyle = stroke_color_right;
